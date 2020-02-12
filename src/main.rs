@@ -41,7 +41,7 @@ fn main() {
 	let len = fnames.len();
 
 	if len > 1 {
-		for i in 1..len {
+		for i in 0..len {
 			if fnames[i] == "-" {
 				print_stdin();
 			} else {
