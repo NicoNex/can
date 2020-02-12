@@ -1,6 +1,8 @@
+extern crate clap;
+
 use std::fs;
-use std::env;
 use std::io::{self, Read};
+use clap::{Arg, App};
 
 fn print_file_content(fname: &str) {
 	let data = fs::read_to_string(fname);
@@ -25,19 +27,26 @@ fn print_stdin() {
 	}
 }
 
-fn usage() {
-	let msg = r"can - Mitt inzim i file e stamba all'stdout.";
-	println!("{}", msg);
-}
-
 fn main() {
-	let args: Vec<String> = env::args().collect();
+	let matches = App::new("can")
+			.author("Nicolò Santamaria <nicolo.santamaria@gmail.com>")
+			.about("Mitt inzim i file e stamba all'stdout.")
+			.arg(Arg::with_name("FILE")
+				.help("Sets the input files to use.")
+				.required(true)
+				.multiple(true))
+			.get_matches();
 
-	if args.len() > 1 {
-		for i in 1..args.len() {
-			print_file_content(&args[i]);
+	let fnames: Vec<_> = matches.values_of("FILE").unwrap().collect();
+	let len = fnames.len();
+
+	if len > 1 {
+		for i in 1..len {
+			if fnames[i] == "-" {
+				print_stdin();
+			} else {
+				print_file_content(&fnames[i]);
+			}
 		}
-	} else {
-		print_stdin();
 	}
 }
